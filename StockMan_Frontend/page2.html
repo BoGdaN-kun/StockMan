@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area Chart with Datetime X-Axis - Dynamic Data</title>
+    <!-- Include ApexCharts library -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+<body>
+
+<!-- Create a container for the chart -->
+<div id="chart"></div>
+
+<script>
+    // Fetch data from the endpoint
+    fetch('http://localhost:8080/stockHistories/SM/2019-01-10/2019-02-01')
+        .then(response => response.json())
+        .then(data => {
+            // Extracting date and OHLC data from the fetched JSON
+            const seriesData = data.map(item => ({
+                x: new Date(item.date),
+                y: [item.open, item.high, item.low, item.close]
+            }));
+
+            // Configure ApexCharts options
+            const options = {
+                chart: {
+                    type: 'area',
+                    height: 350,
+                    width: '100%',
+                    toolbar: {
+                        show: false
+                    }
+                },
+                series: [{
+                    name: 'OHLC',
+                    data: seriesData
+                }],
+                xaxis: {
+                    type: 'datetime'
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth'
+                },
+                title: {
+                    text: 'Area Chart with Datetime X-Axis - Dynamic Data',
+                    align: 'left'
+                },
+                grid: {
+                    row: {
+                        colors: ['#f3f3f3', 'transparent'],
+                        opacity: 0.5
+                    }
+                }
+            };
+
+            // Initialize ApexCharts with the options
+            const chart = new ApexCharts(document.querySelector("#chart"), options);
+
+            // Render the chart
+            chart.render();
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+</script>
+</body>
+</html>
